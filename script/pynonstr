@@ -14,7 +14,7 @@ import simplejson
 import ujson
 from tabulate import tabulate
 
-import orjson
+import xorjson
 
 os.sched_setaffinity(os.getpid(), {0, 1})
 
@@ -29,18 +29,18 @@ for year in range(1920, 2020):
     random.shuffle(array)
     data_as_obj.append(dict(array))
 
-data_as_str = orjson.loads(orjson.dumps(data_as_obj, option=orjson.OPT_NON_STR_KEYS))
+data_as_str = xorjson.loads(xorjson.dumps(data_as_obj, option=xorjson.OPT_NON_STR_KEYS))
 
 headers = ("Library", "str keys (ms)", "int keys (ms)", "int keys sorted (ms)")
 
-LIBRARIES = ("orjson", "ujson", "rapidjson", "simplejson", "json")
+LIBRARIES = ("xorjson", "ujson", "rapidjson", "simplejson", "json")
 
 ITERATIONS = 500
 
 
-output_in_kib = len(orjson.dumps(data_as_str)) / 1024
+output_in_kib = len(xorjson.dumps(data_as_str)) / 1024
 
-print(f"{output_in_kib:,.0f}KiB output (orjson)")
+print(f"{output_in_kib:,.0f}KiB output (xorjson)")
 
 
 def per_iter_latency(val):
@@ -50,7 +50,7 @@ def per_iter_latency(val):
 
 
 def test_correctness(serialized):
-    return orjson.loads(serialized) == data_as_str
+    return xorjson.loads(serialized) == data_as_str
 
 
 table = []
@@ -104,24 +104,24 @@ for lib_name in LIBRARIES:
         time_as_obj = None
         time_as_obj_sorted = None
         correct = False
-    elif lib_name == "orjson":
+    elif lib_name == "xorjson":
         time_as_str = timeit(
-            lambda: orjson.dumps(data_as_str, None, orjson.OPT_NON_STR_KEYS),
+            lambda: xorjson.dumps(data_as_str, None, xorjson.OPT_NON_STR_KEYS),
             number=ITERATIONS,
         )
         time_as_obj = timeit(
-            lambda: orjson.dumps(data_as_obj, None, orjson.OPT_NON_STR_KEYS),
+            lambda: xorjson.dumps(data_as_obj, None, xorjson.OPT_NON_STR_KEYS),
             number=ITERATIONS,
         )
         time_as_obj_sorted = timeit(
-            lambda: orjson.dumps(
-                data_as_obj, None, orjson.OPT_NON_STR_KEYS | orjson.OPT_SORT_KEYS
+            lambda: xorjson.dumps(
+                data_as_obj, None, xorjson.OPT_NON_STR_KEYS | xorjson.OPT_SORT_KEYS
             ),
             number=ITERATIONS,
         )
         correct = test_correctness(
-            orjson.dumps(
-                data_as_obj, None, orjson.OPT_NON_STR_KEYS | orjson.OPT_SORT_KEYS
+            xorjson.dumps(
+                data_as_obj, None, xorjson.OPT_NON_STR_KEYS | xorjson.OPT_SORT_KEYS
             )
         )
     else:

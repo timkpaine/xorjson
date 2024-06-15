@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-import orjson
+import xorjson
 
 dirname = os.path.join(os.path.dirname(__file__), "../data")
 
@@ -26,4 +26,4 @@ def read_fixture(filename: str) -> bytes:
 
 @lru_cache(maxsize=None)
 def read_fixture_obj(filename: str) -> Any:
-    return orjson.loads(read_fixture(filename))
+    return xorjson.loads(read_fixture(filename))

@@ -14,7 +14,7 @@ import simplejson
 import ujson
 from tabulate import tabulate
 
-import orjson
+import xorjson
 
 os.sched_setaffinity(os.getpid(), {0, 1})
 
@@ -28,22 +28,22 @@ def read_fixture_obj(filename):
         contents = lzma.decompress(path.read_bytes())
     else:
         contents = path.read_bytes()
-    return orjson.loads(contents)
+    return xorjson.loads(contents)
 
 
 filename = sys.argv[1] if len(sys.argv) >= 1 else ""
 
 data = read_fixture_obj(f"{filename}.json.xz")
 
-headers = ("Library", "compact (ms)", "pretty (ms)", "vs. orjson")
+headers = ("Library", "compact (ms)", "pretty (ms)", "vs. xorjson")
 
-LIBRARIES = ("orjson", "ujson", "rapidjson", "simplejson", "json")
+LIBRARIES = ("xorjson", "ujson", "rapidjson", "simplejson", "json")
 
-output_in_kib_compact = len(orjson.dumps(data)) / 1024
-output_in_kib_pretty = len(orjson.dumps(data, option=orjson.OPT_INDENT_2)) / 1024
+output_in_kib_compact = len(xorjson.dumps(data)) / 1024
+output_in_kib_pretty = len(xorjson.dumps(data, option=xorjson.OPT_INDENT_2)) / 1024
 
-# minimum 2s runtime for orjson compact
-ITERATIONS = int(2 / (timeit(lambda: orjson.dumps(data), number=20) / 20))
+# minimum 2s runtime for xorjson compact
+ITERATIONS = int(2 / (timeit(lambda: xorjson.dumps(data), number=20) / 20))
 
 print(
     f"{output_in_kib_compact:,.0f}KiB compact, {output_in_kib_pretty:,.0f}KiB pretty, {ITERATIONS} iterations"
@@ -57,7 +57,7 @@ def per_iter_latency(val):
 
 
 def test_correctness(serialized):
-    return orjson.loads(serialized) == data
+    return xorjson.loads(serialized) == data
 
 
 table = []
@@ -97,14 +97,14 @@ for lib_name in LIBRARIES:
         time_compact = timeit(lambda: rapidjson.dumps(data), number=ITERATIONS)
         time_pretty = timeit(lambda: rapidjson.dumps(data, indent=2), number=ITERATIONS)
         correct = test_correctness(rapidjson.dumps(data, indent=2))
-    elif lib_name == "orjson":
-        time_compact = timeit(lambda: orjson.dumps(data), number=ITERATIONS)
+    elif lib_name == "xorjson":
+        time_compact = timeit(lambda: xorjson.dumps(data), number=ITERATIONS)
         time_pretty = timeit(
-            lambda: orjson.dumps(data, None, orjson.OPT_INDENT_2),
+            lambda: xorjson.dumps(data, None, xorjson.OPT_INDENT_2),
             number=ITERATIONS,
         )
-        correct = test_correctness(orjson.dumps(data, None, orjson.OPT_INDENT_2))
-        orjson_time_pretty = per_iter_latency(time_pretty)
+        correct = test_correctness(xorjson.dumps(data, None, xorjson.OPT_INDENT_2))
+        xorjson_time_pretty = per_iter_latency(time_pretty)
     else:
         raise NotImplementedError
 
@@ -114,19 +114,19 @@ for lib_name in LIBRARIES:
     else:
         time_pretty = per_iter_latency(time_pretty)
 
-    if lib_name == "orjson":
-        compared_to_orjson = 1
+    if lib_name == "xorjson":
+        compared_to_xorjson = 1
     elif time_pretty:
-        compared_to_orjson = time_pretty / orjson_time_pretty
+        compared_to_xorjson = time_pretty / xorjson_time_pretty
     else:
-        compared_to_orjson = None
+        compared_to_xorjson = None
 
     table.append(
         (
             lib_name,
             f"{time_compact:,.2f}" if time_compact else "",
             f"{time_pretty:,.2f}" if time_pretty else "",
-            f"{compared_to_orjson:,.1f}" if compared_to_orjson else "",
+            f"{compared_to_xorjson:,.1f}" if compared_to_xorjson else "",
         )
     )
 

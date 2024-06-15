@@ -10,5 +10,5 @@ pytest \
     --benchmark-autosave \
     --benchmark-save-data \
     --random-order \
-    -k orjson \
+    -k xorjson \
     "bench/benchmark_empty.py"

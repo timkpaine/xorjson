@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
-use crate::ffi::orjson_fragmenttype_new;
+use crate::ffi::xorjson_fragmenttype_new;
 use core::ffi::c_char;
 #[cfg(feature = "yyjson")]
 use core::ffi::c_void;
@@ -140,7 +140,7 @@ fn _init_typerefs_impl() -> bool {
         assert!(crate::deserialize::KEY_MAP
             .set(crate::deserialize::KeyMap::default())
             .is_ok());
-        FRAGMENT_TYPE = orjson_fragmenttype_new();
+        FRAGMENT_TYPE = xorjson_fragmenttype_new();
         PyDateTime_IMPORT();
         NONE = Py_None();
         TRUE = Py_True();
@@ -209,7 +209,7 @@ unsafe fn look_up_json_exc() -> *mut PyObject {
     let module_dict = PyObject_GenericGetDict(module, null_mut());
     let ptr = PyMapping_GetItemString(module_dict, "JSONDecodeError\0".as_ptr() as *const c_char);
     let res = pyo3_ffi::PyErr_NewException(
-        "orjson.JSONDecodeError\0".as_ptr() as *const c_char,
+        "xorjson.JSONDecodeError\0".as_ptr() as *const c_char,
         ptr,
         null_mut(),
     );

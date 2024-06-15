@@ -32,7 +32,7 @@ jobs:
 
     - run: maturin sdist --out=dist
 
-    - run: python3 -m pip install --user dist/orjson*.tar.gz
+    - run: python3 -m pip install --user dist/xorjson*.tar.gz
       env:
         CARGO_NET_OFFLINE: "true"
 
@@ -51,7 +51,7 @@ jobs:
       if: "startsWith(github.ref, 'refs/tags/')"
       uses: actions/upload-artifact@v4
       with:
-        name: orjson_sdist
+        name: xorjson_sdist
         path: dist
         overwrite: true
         retention-days: 1
@@ -73,7 +73,7 @@ jobs:
       CFLAGS: "-Os -fstrict-aliasing -fno-plt -flto=full -emit-llvm"
       LDFLAGS: "-fuse-ld=lld -Wl,-plugin-opt=also-emit-llvm -Wl,--as-needed -Wl,-zrelro,-znow"
       RUSTFLAGS: "-C linker=clang -C link-arg=-fuse-ld=lld -C linker-plugin-lto -C lto=fat -C link-arg=-Wl,-zrelro,-znow -Z mir-opt-level=4 -Z virtual-function-elimination -Z threads=2 -D warnings"
-      PATH: "/__w/orjson/orjson/.venv/bin:/github/home/.cargo/bin:/root/.local/bin:/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      PATH: "/__w/xorjson/xorjson/.venv/bin:/github/home/.cargo/bin:/root/.local/bin:/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     container:
       image: fedora:41
     steps:
@@ -106,7 +106,7 @@ jobs:
           --compatibility manylinux_2_17 \
           --interpreter python${{ matrix.python.version }} \
           --target=x86_64-unknown-linux-gnu
-        uv pip install target/wheels/orjson*.whl
+        uv pip install target/wheels/xorjson*.whl
 
     - run: pytest -s -rxX -v -n 2 test
       env:
@@ -125,7 +125,7 @@ jobs:
       if: "startsWith(github.ref, 'refs/tags/')"
       uses: actions/upload-artifact@v4
       with:
-        name: orjson_manylinux_2_17_amd64_${{ matrix.python.version }}
+        name: xorjson_manylinux_2_17_amd64_${{ matrix.python.version }}
         path: target/wheels
         overwrite: true
         retention-days: 1
@@ -193,14 +193,14 @@ jobs:
           python${{ matrix.python.version }} -m venv venv
           venv/bin/pip install -U pip wheel
           venv/bin/pip install -r test/requirements.txt
-          venv/bin/pip install orjson --no-index --find-links dist/ --force-reinstall
+          venv/bin/pip install xorjson --no-index --find-links dist/ --force-reinstall
           venv/bin/python -m pytest -s -rxX -v -n 2 test
 
     - name: Store wheels
       if: "startsWith(github.ref, 'refs/tags/')"
       uses: actions/upload-artifact@v4
       with:
-        name: orjson_musllinux_1_2_${{ matrix.platform.arch }}_${{ matrix.python.version }}
+        name: xorjson_musllinux_1_2_${{ matrix.platform.arch }}_${{ matrix.python.version }}
         path: dist
         overwrite: true
         retention-days: 1
@@ -279,14 +279,14 @@ jobs:
           python${{ matrix.python.version }} -m venv venv
           venv/bin/pip install -U pip wheel
           venv/bin/pip install -r test/requirements.txt
-          venv/bin/pip install orjson --no-index --find-links dist/ --force-reinstall
+          venv/bin/pip install xorjson --no-index --find-links dist/ --force-reinstall
           venv/bin/python -m pytest -s -rxX -v -n 2 test
 
     - name: Store wheels
       if: "startsWith(github.ref, 'refs/tags/')"
       uses: actions/upload-artifact@v4
       with:
-        name: orjson_manylinux_2_17_${{ matrix.target.arch }}_${{ matrix.python.version }}
+        name: xorjson_manylinux_2_17_${{ matrix.target.arch }}_${{ matrix.python.version }}
         path: dist
         overwrite: true
         retention-days: 1
@@ -308,7 +308,7 @@ jobs:
       CFLAGS_x86_64_apple_darwin: "-O2 -fstrict-aliasing -flto=full -march=x86-64-v2 -mtune=generic"
       CFLAGS_aarch64_apple_darwin: "-O2 -fstrict-aliasing -flto=full -mcpu=apple-m1 -mtune=generic"
       RUSTFLAGS: "-C lto=fat -Z mir-opt-level=4 -Z virtual-function-elimination -Z threads=3 -D warnings"
-      PATH: "/Users/runner/work/orjson/orjson/.venv/bin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Library/Frameworks/Python.framework/Versions/Current/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      PATH: "/Users/runner/work/xorjson/xorjson/.venv/bin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Library/Frameworks/Python.framework/Versions/Current/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     steps:
 
     - uses: actions/checkout@v4
@@ -343,7 +343,7 @@ jobs:
           --features=no-panic,unstable-simd,yyjson \
           --interpreter python${{ matrix.python.version }} \
           --target=universal2-apple-darwin
-        uv pip install target/wheels/orjson*.whl
+        uv pip install target/wheels/xorjson*.whl
 
     - run: pytest -s -rxX -v -n 3 test
       env:
@@ -357,7 +357,7 @@ jobs:
       if: "startsWith(github.ref, 'refs/tags/')"
       uses: actions/upload-artifact@v4
       with:
-        name: orjson_universal2_aarch64_${{ matrix.python.version }}
+        name: xorjson_universal2_aarch64_${{ matrix.python.version }}
         path: target/wheels
         overwrite: true
         retention-days: 1
@@ -378,7 +378,7 @@ jobs:
       CFLAGS_x86_64_apple_darwin: "-O2 -fstrict-aliasing -flto=full -march=x86-64-v2 -mtune=generic"
       CFLAGS_aarch64_apple_darwin: "-O2 -fstrict-aliasing -flto=full -mcpu=apple-m1 -mtune=generic"
       RUSTFLAGS: "-C lto=fat -Z mir-opt-level=4 -Z virtual-function-elimination -Z threads=3 -D warnings"
-      PATH: "/Users/runner/work/orjson/orjson/.venv/bin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Library/Frameworks/Python.framework/Versions/Current/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      PATH: "/Users/runner/work/xorjson/xorjson/.venv/bin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Library/Frameworks/Python.framework/Versions/Current/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     steps:
 
     - uses: actions/checkout@v4
@@ -413,7 +413,7 @@ jobs:
           --features=no-panic,unstable-simd,yyjson \
           --interpreter python${{ matrix.python.version }} \
           --target=universal2-apple-darwin
-        uv pip install target/wheels/orjson*.whl
+        uv pip install target/wheels/xorjson*.whl
 
     - run: pytest -s -rxX -v -n 3 test
       env:
@@ -427,38 +427,38 @@ jobs:
       if: "startsWith(github.ref, 'refs/tags/')"
       uses: actions/upload-artifact@v4
       with:
-        name: orjson_universal2_amd64_${{ matrix.python.version }}
+        name: xorjson_universal2_amd64_${{ matrix.python.version }}
         path: target/wheels
         overwrite: true
         retention-days: 1
 
-  pypi:
-    name: PyPI
-    runs-on: ubuntu-22.04
-    if: "startsWith(github.ref, 'refs/tags/')"
-    needs: [
-      sdist,
-      manylinux_2_17_amd64,
-      musllinux_1_2,
-      manylinux_2_17_non_amd64,
-      macos_universal2_aarch64,
-      macos_universal2_amd64,
-    ]
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: orjson_*
-          merge-multiple: true
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install pip "maturin>=1,<2"
-      - run: ls -1 .
-      - name: deploy wheel
-        run: maturin upload --skip-existing --username "$MATURIN_USERNAME" *.whl
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      - name: deploy sdist
-        run: maturin upload --skip-existing --username "$MATURIN_USERNAME" *.tar.gz
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+  # pypi:
+  #   name: PyPI
+  #   runs-on: ubuntu-22.04
+  #   if: "startsWith(github.ref, 'refs/tags/')"
+  #   needs: [
+  #     sdist,
+  #     manylinux_2_17_amd64,
+  #     musllinux_1_2,
+  #     manylinux_2_17_non_amd64,
+  #     macos_universal2_aarch64,
+  #     macos_universal2_amd64,
+  #   ]
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         pattern: xorjson_*
+  #         merge-multiple: true
+  #     - uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.12"
+  #     - run: pip install pip "maturin>=1,<2"
+  #     - run: ls -1 .
+  #     - name: deploy wheel
+  #       run: maturin upload --skip-existing --username "$MATURIN_USERNAME" *.whl
+  #       env:
+  #         MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+  #     - name: deploy sdist
+  #       run: maturin upload --skip-existing --username "$MATURIN_USERNAME" *.tar.gz
+  #       env:
+  #         MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}

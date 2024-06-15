@@ -18,7 +18,7 @@ pub struct Fragment {
 #[cfg_attr(feature = "optimize", optimize(size))]
 fn raise_args_exception() -> *mut PyObject {
     unsafe {
-        let msg = "orjson.Fragment() takes exactly 1 positional argument";
+        let msg = "xorjson.Fragment() takes exactly 1 positional argument";
         let err_msg =
             PyUnicode_FromStringAndSize(msg.as_ptr() as *const c_char, msg.len() as isize);
         PyErr_SetObject(PyExc_TypeError, err_msg);
@@ -30,7 +30,7 @@ fn raise_args_exception() -> *mut PyObject {
 #[no_mangle]
 #[cold]
 #[cfg_attr(feature = "optimize", optimize(size))]
-pub unsafe extern "C" fn orjson_fragment_tp_new(
+pub unsafe extern "C" fn xorjson_fragment_tp_new(
     _subtype: *mut PyTypeObject,
     args: *mut PyObject,
     kwds: *mut PyObject,
@@ -53,7 +53,7 @@ pub unsafe extern "C" fn orjson_fragment_tp_new(
 #[no_mangle]
 #[cold]
 #[cfg_attr(feature = "optimize", optimize(size))]
-pub unsafe extern "C" fn orjson_fragment_dealloc(object: *mut PyObject) {
+pub unsafe extern "C" fn xorjson_fragment_dealloc(object: *mut PyObject) {
     Py_DECREF((*(object as *mut Fragment)).contents);
     std::alloc::dealloc(object as *mut u8, std::alloc::Layout::new::<Fragment>());
 }
@@ -67,7 +67,7 @@ const FRAGMENT_TP_FLAGS: c_ulong = Py_TPFLAGS_DEFAULT;
 #[no_mangle]
 #[cold]
 #[cfg_attr(feature = "optimize", optimize(size))]
-pub unsafe extern "C" fn orjson_fragmenttype_new() -> *mut PyTypeObject {
+pub unsafe extern "C" fn xorjson_fragmenttype_new() -> *mut PyTypeObject {
     let ob = Box::new(PyTypeObject {
         ob_base: PyVarObject {
             ob_base: PyObject {
@@ -79,12 +79,12 @@ pub unsafe extern "C" fn orjson_fragmenttype_new() -> *mut PyTypeObject {
             },
             ob_size: 0,
         },
-        tp_name: "orjson.Fragment\0".as_ptr() as *const c_char,
+        tp_name: "xorjson.Fragment\0".as_ptr() as *const c_char,
         tp_basicsize: core::mem::size_of::<Fragment>() as isize,
         tp_itemsize: 0,
-        tp_dealloc: Some(orjson_fragment_dealloc),
+        tp_dealloc: Some(xorjson_fragment_dealloc),
         tp_init: None,
-        tp_new: Some(orjson_fragment_tp_new),
+        tp_new: Some(xorjson_fragment_tp_new),
         tp_flags: FRAGMENT_TP_FLAGS,
         // ...
         tp_bases: null_mut(),
