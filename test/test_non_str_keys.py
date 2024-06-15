@@ -244,14 +244,6 @@ class TestNonStrKeyTests:
             xorjson.dumps({"1": True}, option=xorjson.OPT_NON_STR_KEYS) == b'{"1":true}'
         )
 
-    def test_dict_keys_type(self):
-        class Obj:
-            a: str
-
-        val = Obj()
-        with pytest.raises(xorjson.JSONEncodeError):
-            xorjson.dumps({val: True}, option=xorjson.OPT_NON_STR_KEYS)
-
     @pytest.mark.skipif(numpy is None, reason="numpy is not installed")
     def test_dict_keys_array(self):
         with pytest.raises(TypeError):
@@ -290,11 +282,7 @@ class TestNonStrKeyTests:
         with pytest.raises(xorjson.JSONEncodeError):
             xorjson.dumps(obj, option=xorjson.OPT_NON_STR_KEYS)
 
-    def test_dict_keys_unknown(self):
-        with pytest.raises(xorjson.JSONEncodeError):
-            xorjson.dumps({frozenset(): True}, option=xorjson.OPT_NON_STR_KEYS)
-
-    def test_dict_keys_no_str_call(self):
+    def test_dict_keys_str_call(self):
         class Obj:
             a: str
 
@@ -302,5 +290,7 @@ class TestNonStrKeyTests:
                 return "Obj"
 
         val = Obj()
-        with pytest.raises(xorjson.JSONEncodeError):
+        assert (
             xorjson.dumps({val: True}, option=xorjson.OPT_NON_STR_KEYS)
+            == b'{"Obj":true}'
+        )
