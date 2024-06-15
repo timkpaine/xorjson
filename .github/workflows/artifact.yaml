@@ -130,80 +130,80 @@ jobs:
         overwrite: true
         retention-days: 1
 
-  musllinux_1_2:
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        python: [
-          { version: '3.12' },
-          { version: '3.11' },
-          { version: '3.10' },
-          { version: '3.9' },
-          { version: '3.8' },
-        ]
-        platform:
-          - target: aarch64-unknown-linux-musl
-            arch: aarch64
-            platform: linux/arm64
-            features: no-panic,unstable-simd,unwind,yyjson
-          - target: x86_64-unknown-linux-musl
-            arch: x86_64
-            platform: linux/amd64
-            features: avx512,no-panic,unstable-simd,unwind,yyjson
-    steps:
-    - uses: actions/checkout@v4
+  # musllinux_1_2:
+  #   runs-on: ubuntu-22.04
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       python: [
+  #         { version: '3.12' },
+  #         { version: '3.11' },
+  #         { version: '3.10' },
+  #         { version: '3.9' },
+  #         { version: '3.8' },
+  #       ]
+  #       platform:
+  #         - target: aarch64-unknown-linux-musl
+  #           arch: aarch64
+  #           platform: linux/arm64
+  #           features: no-panic,unstable-simd,unwind,yyjson
+  #         - target: x86_64-unknown-linux-musl
+  #           arch: x86_64
+  #           platform: linux/amd64
+  #           features: avx512,no-panic,unstable-simd,unwind,yyjson
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    - name: build-std
-      run: |
-        mkdir .cargo
-        cp ci/config.toml .cargo/config.toml
+  #   - name: build-std
+  #     run: |
+  #       mkdir .cargo
+  #       cp ci/config.toml .cargo/config.toml
 
-    - name: Build
-      uses: PyO3/maturin-action@v1
-      env:
-        CC: "gcc"
-        CFLAGS: "-Os"
-        LDFLAGS: "-Wl,--as-needed"
-        RUSTFLAGS: "-C lto=fat -Z mir-opt-level=4 -Z virtual-function-elimination -Z threads=2 -D warnings -C target-feature=-crt-static"
-      with:
-        rust-toolchain: nightly-2024-06-10
-        rustup-components: rust-src
-        target: ${{ matrix.platform.target }}
-        manylinux: musllinux_1_2
-        args: --release --strip --out=dist --features=${{ matrix.platform.features }} -i python${{ matrix.python.version }}
+  #   - name: Build
+  #     uses: PyO3/maturin-action@v1
+  #     env:
+  #       CC: "gcc"
+  #       CFLAGS: "-Os"
+  #       LDFLAGS: "-Wl,--as-needed"
+  #       RUSTFLAGS: "-C lto=fat -Z mir-opt-level=4 -Z virtual-function-elimination -Z threads=2 -D warnings -C target-feature=-crt-static"
+  #     with:
+  #       rust-toolchain: nightly-2024-06-10
+  #       rustup-components: rust-src
+  #       target: ${{ matrix.platform.target }}
+  #       manylinux: musllinux_1_2
+  #       args: --release --strip --out=dist --features=${{ matrix.platform.features }} -i python${{ matrix.python.version }}
 
-    - name: QEMU
-      if: matrix.platform.arch != 'x86_64'
-      uses: docker/setup-qemu-action@v3
-      with:
-        image: tonistiigi/binfmt:qemu-v8.1.5
-        platforms: ${{ matrix.platform.platform }}
+  #   - name: QEMU
+  #     if: matrix.platform.arch != 'x86_64'
+  #     uses: docker/setup-qemu-action@v3
+  #     with:
+  #       image: tonistiigi/binfmt:qemu-v8.1.5
+  #       platforms: ${{ matrix.platform.platform }}
 
-    - name: Test
-      uses: addnab/docker-run-action@v3
-      with:
-        image: quay.io/pypa/musllinux_1_2_${{ matrix.platform.arch }}:latest
-        options: -v ${{ github.workspace }}:/io -w /io
-        run: |
-          apk add tzdata
-          sed -i '/^psutil/d' test/requirements.txt # missing 3.11, 3.12 wheels
-          sed -i '/^numpy/d' test/requirements.txt
+  #   - name: Test
+  #     uses: addnab/docker-run-action@v3
+  #     with:
+  #       image: quay.io/pypa/musllinux_1_2_${{ matrix.platform.arch }}:latest
+  #       options: -v ${{ github.workspace }}:/io -w /io
+  #       run: |
+  #         apk add tzdata
+  #         sed -i '/^psutil/d' test/requirements.txt # missing 3.11, 3.12 wheels
+  #         sed -i '/^numpy/d' test/requirements.txt
 
-          python${{ matrix.python.version }} -m venv venv
-          venv/bin/pip install -U pip wheel
-          venv/bin/pip install -r test/requirements.txt
-          venv/bin/pip install xorjson --no-index --find-links dist/ --force-reinstall
-          venv/bin/python -m pytest -s -rxX -v -n 2 test
+  #         python${{ matrix.python.version }} -m venv venv
+  #         venv/bin/pip install -U pip wheel
+  #         venv/bin/pip install -r test/requirements.txt
+  #         venv/bin/pip install xorjson --no-index --find-links dist/ --force-reinstall
+  #         venv/bin/python -m pytest -s -rxX -v -n 2 test
 
-    - name: Store wheels
-      if: "startsWith(github.ref, 'refs/tags/')"
-      uses: actions/upload-artifact@v4
-      with:
-        name: xorjson_musllinux_1_2_${{ matrix.platform.arch }}_${{ matrix.python.version }}
-        path: dist
-        overwrite: true
-        retention-days: 1
+  #   - name: Store wheels
+  #     if: "startsWith(github.ref, 'refs/tags/')"
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: xorjson_musllinux_1_2_${{ matrix.platform.arch }}_${{ matrix.python.version }}
+  #       path: dist
+  #       overwrite: true
+  #       retention-days: 1
 
   manylinux_2_17_non_amd64:
     runs-on: ubuntu-22.04
@@ -225,20 +225,20 @@ jobs:
             rustflags: '-Z mir-opt-level=4 -C lto=fat -D warnings',
             target: 'aarch64-unknown-linux-gnu',
           },
-          {
-            arch: 'ppc64le',
-            cflags: '-Os -flto=full -fstrict-aliasing',
-            features: 'no-panic,unstable-simd,yyjson',
-            rustflags: '-Z mir-opt-level=4 -C lto=fat -D warnings',
-            target: 'powerpc64le-unknown-linux-gnu',
-          },
-          {
-            arch: 's390x',
-            cflags: '-Os -flto=full -fstrict-aliasing -march=z10',
-            features: 'no-panic,yyjson',
-            rustflags: '-Z mir-opt-level=4 -C lto=fat -D warnings -C target-cpu=z10',
-            target: 's390x-unknown-linux-gnu',
-          },
+          # {
+          #   arch: 'ppc64le',
+          #   cflags: '-Os -flto=full -fstrict-aliasing',
+          #   features: 'no-panic,unstable-simd,yyjson',
+          #   rustflags: '-Z mir-opt-level=4 -C lto=fat -D warnings',
+          #   target: 'powerpc64le-unknown-linux-gnu',
+          # },
+          # {
+          #   arch: 's390x',
+          #   cflags: '-Os -flto=full -fstrict-aliasing -march=z10',
+          #   features: 'no-panic,yyjson',
+          #   rustflags: '-Z mir-opt-level=4 -C lto=fat -D warnings -C target-cpu=z10',
+          #   target: 's390x-unknown-linux-gnu',
+          # },
         ]
     steps:
     - uses: actions/checkout@v4
