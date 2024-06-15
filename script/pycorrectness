@@ -9,11 +9,11 @@ from pathlib import Path
 
 from tabulate import tabulate
 
-import orjson
+import xorjson
 
 dirname = os.path.join(os.path.dirname(__file__), "..", "data")
 
-LIBRARIES = ["orjson", "ujson", "rapidjson", "simplejson", "json"]
+LIBRARIES = ["xorjson", "ujson", "rapidjson", "simplejson", "json"]
 
 
 def read_fixture_bytes(filename, subdir=None):
@@ -46,10 +46,10 @@ RESULTS = collections.defaultdict(dict)
 def test_passed(library, fixture):
     passed = []
     try:
-        passed.append(library.loads(fixture) == orjson.loads(fixture))
+        passed.append(library.loads(fixture) == xorjson.loads(fixture))
         passed.append(
             library.loads(fixture.decode("utf-8"))
-            == orjson.loads(fixture.decode("utf-8"))
+            == xorjson.loads(fixture.decode("utf-8"))
         )
     except Exception:
         passed.append(False)

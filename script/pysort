@@ -13,7 +13,7 @@ import simplejson
 import ujson
 from tabulate import tabulate
 
-import orjson
+import xorjson
 
 os.sched_setaffinity(os.getpid(), {0, 1})
 
@@ -27,14 +27,14 @@ def read_fixture_obj(filename):
         contents = lzma.decompress(path.read_bytes())
     else:
         contents = path.read_bytes()
-    return orjson.loads(contents)
+    return xorjson.loads(contents)
 
 
 data = read_fixture_obj("twitter.json.xz")
 
-headers = ("Library", "unsorted (ms)", "sorted (ms)", "vs. orjson")
+headers = ("Library", "unsorted (ms)", "sorted (ms)", "vs. xorjson")
 
-LIBRARIES = ("orjson", "ujson", "rapidjson", "simplejson", "json")
+LIBRARIES = ("xorjson", "ujson", "rapidjson", "simplejson", "json")
 
 ITERATIONS = 500
 
@@ -83,32 +83,32 @@ for lib_name in LIBRARIES:
             lambda: rapidjson.dumps(data, sort_keys=True).encode("utf-8"),
             number=ITERATIONS,
         )
-    elif lib_name == "orjson":
-        time_unsorted = timeit(lambda: orjson.dumps(data), number=ITERATIONS)
+    elif lib_name == "xorjson":
+        time_unsorted = timeit(lambda: xorjson.dumps(data), number=ITERATIONS)
         time_sorted = timeit(
-            lambda: orjson.dumps(data, None, orjson.OPT_SORT_KEYS),
+            lambda: xorjson.dumps(data, None, xorjson.OPT_SORT_KEYS),
             number=ITERATIONS,
         )
-        orjson_time_sorted = per_iter_latency(time_sorted)
+        xorjson_time_sorted = per_iter_latency(time_sorted)
     else:
         raise NotImplementedError
 
     time_unsorted = per_iter_latency(time_unsorted)
     time_sorted = per_iter_latency(time_sorted)
 
-    if lib_name == "orjson":
-        compared_to_orjson = 1
+    if lib_name == "xorjson":
+        compared_to_xorjson = 1
     elif time_unsorted:
-        compared_to_orjson = time_sorted / orjson_time_sorted
+        compared_to_xorjson = time_sorted / xorjson_time_sorted
     else:
-        compared_to_orjson = None
+        compared_to_xorjson = None
 
     table.append(
         (
             lib_name,
             f"{time_unsorted:,.2f}" if time_unsorted else "",
             f"{time_sorted:,.2f}" if time_sorted else "",
-            f"{compared_to_orjson:,.1f}" if compared_to_orjson else "",
+            f"{compared_to_xorjson:,.1f}" if compared_to_xorjson else "",
         )
     )
 

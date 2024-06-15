@@ -10,9 +10,9 @@ import seaborn
 from matplotlib import pyplot
 from tabulate import tabulate
 
-import orjson
+import xorjson
 
-LIBRARIES = ("orjson", "ujson", "rapidjson", "simplejson", "json")
+LIBRARIES = ("xorjson", "ujson", "rapidjson", "simplejson", "json")
 
 
 def aggregate():
@@ -20,7 +20,7 @@ def aggregate():
     res = collections.defaultdict(dict)
     for filename in os.listdir(benchmarks_dir):
         with open(os.path.join(benchmarks_dir, filename), "r") as fileh:
-            data = orjson.loads(fileh.read())
+            data = xorjson.loads(fileh.read())
 
         for each in data["benchmarks"]:
             res[each["group"]][each["extra_info"]["lib"]] = {
@@ -71,10 +71,10 @@ def tab(obj):
                 }
             )
 
-        orjson_baseline = table[0][1]
+        xorjson_baseline = table[0][1]
         for each in table:
             each[3] = (
-                "%.1f" % (each[1] / orjson_baseline)
+                "%.1f" % (each[1] / xorjson_baseline)
                 if isinstance(each[1], float)
                 else None
             )

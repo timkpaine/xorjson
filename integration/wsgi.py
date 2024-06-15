@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from flask import Flask
 
-import orjson
+import xorjson
 
 app = Flask(__name__)
 
@@ -17,10 +17,10 @@ def root():
     data = {
         "uuid": uuid4(),
         "updated_at": NOW,
-        "data": [1, 2.2, None, True, False, orjson.Fragment(b"{}")],
+        "data": [1, 2.2, None, True, False, xorjson.Fragment(b"{}")],
     }
-    payload = orjson.dumps(
-        data, option=orjson.OPT_NAIVE_UTC | orjson.OPT_OMIT_MICROSECONDS
+    payload = xorjson.dumps(
+        data, option=xorjson.OPT_NAIVE_UTC | xorjson.OPT_OMIT_MICROSECONDS
     )
     return app.response_class(
         response=payload,

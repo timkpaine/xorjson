@@ -10,14 +10,14 @@ from simplejson import loads as simplejson_loads
 from ujson import dumps as _ujson_dumps
 from ujson import loads as ujson_loads
 
-from orjson import dumps as _orjson_dumps
-from orjson import loads as orjson_loads
+from xorjson import dumps as _xorjson_dumps
+from xorjson import loads as xorjson_loads
 
 # dumps wrappers that return UTF-8
 
 
-def orjson_dumps(obj):
-    return _orjson_dumps(obj)
+def xorjson_dumps(obj):
+    return _xorjson_dumps(obj)
 
 
 def ujson_dumps(obj):
@@ -38,7 +38,7 @@ def simplejson_dumps(obj):
 
 # Add new libraries here (pair of UTF-8 dumper, loader)
 libraries = {
-    "orjson": (orjson_dumps, orjson_loads),
+    "xorjson": (xorjson_dumps, xorjson_loads),
     "ujson": (ujson_dumps, ujson_loads),
     "json": (json_dumps, json_loads),
     "rapidjson": (rapidjson_dumps, rapidjson_loads),

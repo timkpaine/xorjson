@@ -17,8 +17,8 @@ proc = psutil.Process()
 lib_name = sys.argv[2]
 if lib_name == "json":
     from json import dumps, loads
-elif lib_name == "orjson":
-    from orjson import dumps, loads
+elif lib_name == "xorjson":
+    from xorjson import dumps, loads
 elif lib_name == "rapidjson":
     from rapidjson import dumps, loads
 elif lib_name == "simplejson":

@@ -6,7 +6,7 @@ import os
 
 os.sched_setaffinity(os.getpid(), {0, 1})
 
-from orjson import dumps, OPT_SERIALIZE_NUMPY
+from xorjson import dumps, OPT_SERIALIZE_NUMPY
 
 class Custom:
     pass

@@ -4,11 +4,11 @@
 import multiprocessing.pool
 import sys
 
-import orjson
+import xorjson
 
 NUM_PROC = 16
 
-TEST_MESSAGE = "parallel import of orjson running..."
+TEST_MESSAGE = "parallel import of xorjson running..."
 
 
 class Custom:
@@ -20,8 +20,8 @@ def default(_):
 
 
 def func(_):
-    orjson.dumps(Custom(), option=orjson.OPT_SERIALIZE_NUMPY, default=default)
-    orjson.loads(b'{"a":1,"b":2,"c":3}')
+    xorjson.dumps(Custom(), option=xorjson.OPT_SERIALIZE_NUMPY, default=default)
+    xorjson.loads(b'{"a":1,"b":2,"c":3}')
 
 
 def main():

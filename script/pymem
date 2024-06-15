@@ -10,7 +10,7 @@ buf = io.StringIO()
 
 headers = ("Library", "import, read() RSS (MiB)", "loads() increase in RSS (MiB)")
 
-LIBRARIES = ("orjson", "ujson", "rapidjson", "simplejson", "json")
+LIBRARIES = ("xorjson", "ujson", "rapidjson", "simplejson", "json")
 
 FIXTURES = ("canada.json", "citm_catalog.json", "github.json", "twitter.json")
 
